@@ -3,14 +3,17 @@ import { CommonModule } from '@angular/common';
 
 import { CatmashRoutingModule } from './catmash-routing.module';
 import { UiModule } from '../ui/ui.module';
+import { VoteComponent } from './components/vote/vote.component';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    VoteComponent
+  ],
   imports: [
     CommonModule,
+    UiModule,
     CatmashRoutingModule,
-    UiModule
   ]
 })
 export class CatmashModule { }
