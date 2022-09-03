@@ -1,3 +1,5 @@
+using CatMash.Models;
+using CatMash.Queries;
 using CatMash.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +30,11 @@ namespace CatMash
         {
             services.AddControllers();
             services.AddHttpClient();
+
             services.AddHostedService<StartupService>();
+            services.AddScoped<ICatQueryService, CatQueryService>();
+
+            services.Configure<ConnectionString>( Configuration.GetSection("ConnectionString") );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
