@@ -1,5 +1,10 @@
-﻿using CatMash.Models;
+﻿using CatMash.Helpers;
+using CatMash.Models;
+using CatMash.Queries;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,18 +15,37 @@ namespace CatMash.Controllers
     [Route("/api/cat")]
     public class CatController : ControllerBase
     {
-        private IHttpClientFactory _httpClientFactory;
-        public CatController(IHttpClientFactory httpClientFactory)
+        readonly ICatQueryService _catQueryService;
+        readonly IOptions<ConnectionString> _connectionString;
+
+        public CatController(ICatQueryService catQueryService, IOptions<ConnectionString> connectionString)
         {
-            _httpClientFactory = httpClientFactory;
+            _catQueryService = catQueryService;
+            _connectionString = connectionString;
         }
 
-        [HttpGet( "getCatList" )]
-        public async Task<IActionResult> GetCatList()
+        [HttpGet( "getAllCats" )]
+        public async Task<IActionResult> GetAllCats()
         {
-            using (var httpClient = _httpClientFactory.CreateClient())
+            using ( var ctx = DbHelper.CreateCtx( _connectionString.Value.Name ) )
             {
-                return Ok( await httpClient.GetAsync("https://latelier.co/data/cats.json") );
+                return Ok( await _catQueryService.GetAllCatsAsync( ctx ) );
+            }
+        }
+
+        [HttpPut( "vote" )]
+        public async Task<IActionResult> PutVoteCat( string id )
+        {
+            using (var ctx = DbHelper.CreateCtx(_connectionString.Value.Name))
+            {
+                try
+                {
+                    await _catQueryService.UpdateCatScoreAsync(ctx, id);
+                } catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                return Ok();
             }
         }
     }
