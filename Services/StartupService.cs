@@ -10,16 +10,22 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.Extensions.Configuration;
+using CatMash.Helpers;
+using Microsoft.Extensions.Options;
 
 namespace CatMash.Services
 {
     public class StartupService : IHostedService
     {
-        private IServiceScopeFactory _serviceScopeFactory;
+        readonly IServiceScopeFactory _serviceScopeFactory;
+        readonly IOptions<ConnectionString> _connectionString;
 
-        public StartupService(IServiceScopeFactory serviceScopeFactory)
+        public StartupService(IServiceScopeFactory serviceScopeFactory, IOptions<ConnectionString> connectionString)
         {
             _serviceScopeFactory = serviceScopeFactory;
+            _connectionString = connectionString;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -27,11 +33,11 @@ namespace CatMash.Services
             if (File.Exists("database.db")) return;
             else
             {
-                using (var conn = CreateDatabase())
+                using ( var ctx = DbHelper.CreateCtx( _connectionString.Value.Name ) )
                 {
                     // Get all cats and add them to the DB.
 
-                    CreateTable(conn);
+                    DbHelper.CreateTable(ctx);
 
                     using (var scope = _serviceScopeFactory.CreateScope() )
                     {
@@ -47,7 +53,7 @@ namespace CatMash.Services
 
                             foreach( Cat cat in cats.Images)
                             {
-                                InsertData(conn, cat.Id, cat.Url);
+                                DbHelper.InsertData(ctx, cat.Id, cat.Url);
                             }
                         }
                         return;
@@ -61,63 +67,5 @@ namespace CatMash.Services
         {
             return Task.CompletedTask;
         }
-
-        static SQLiteConnection CreateDatabase()
-        {
-
-            SQLiteConnection sqliteConn;
-            sqliteConn = new SQLiteConnection( @"Data Source = database.db; Version = 3; New = True; Compress = True;");
-
-            // Open the connection:
-            try
-            {
-                sqliteConn.Open();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return sqliteConn;
-        }
-
-        static void CreateTable(SQLiteConnection conn)
-        {
-            SQLiteCommand sqliteCmd;
-            string CreateTable = @"
-                CREATE TABLE CatTable(
-                    Id TEXT, 
-                    Url TEXT, 
-                    Score INTEGER
-                );";
-            sqliteCmd = conn.CreateCommand();
-            sqliteCmd.CommandText = CreateTable;
-            sqliteCmd.ExecuteNonQuery();
-        }
-
-        static void InsertData(SQLiteConnection conn, string id, string url)
-        {
-            SQLiteCommand sqliteCmd;
-            sqliteCmd = conn.CreateCommand();
-            sqliteCmd.CommandText = @$"
-                INSERT INTO CatTable (Id, Url, Score) 
-                VALUES( '{id}', '{url}', 0 );";
-            sqliteCmd.ExecuteNonQuery();
-        }
-
-        //static void ReadData(SQLiteConnection conn)
-        //{
-        //    SQLiteDataReader sqliteDataReader;
-        //    SQLiteCommand sqliteCmd;
-        //    sqliteCmd = conn.CreateCommand();
-        //    sqliteCmd.CommandText = @"SELECT * FROM CatTable";
-
-        //    sqliteDataReader = sqliteCmd.ExecuteReader();
-        //    while (sqliteDataReader.Read())
-        //    {
-        //        string myreader = sqliteDataReader.GetString(0);
-        //        Console.WriteLine(myreader);
-        //    }
-        //    conn.Close();
-        //}
     }
 }
