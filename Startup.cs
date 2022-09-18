@@ -3,16 +3,9 @@ using CatMash.Queries;
 using CatMash.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CatMash
 {
@@ -34,6 +27,8 @@ namespace CatMash
             services.AddHostedService<StartupService>();
             services.AddScoped<ICatQueryService, CatQueryService>();
 
+            services.AddCors();
+
             services.Configure<ConnectionString>( Configuration.GetSection("ConnectionString") );
         }
 
@@ -45,9 +40,16 @@ namespace CatMash
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors(c =>
+                c.SetIsOriginAllowed(host => true)
+                 .AllowAnyMethod()
+                 .AllowAnyHeader()
+                 .AllowCredentials());
 
             app.UseAuthorization();
 
@@ -55,6 +57,8 @@ namespace CatMash
             {
                 endpoints.MapControllers();
             });
+
+            app.UseHttpsRedirection();
         }
     }
 }
