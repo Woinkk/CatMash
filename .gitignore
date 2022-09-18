@@ -277,3 +277,6 @@ $StObjGen/
 
 CodeCakeBuilder/[Rr]elease/
 CodeCakeBuilder/[Rr]eleases/
+/wwwroot
+/Properties/PublishProfiles/catmashdemo - Web Deploy.pubxml
+/Properties/ServiceDependencies/catmashdemo - Web Deploy/profile.arm.json
