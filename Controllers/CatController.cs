@@ -3,6 +3,7 @@ using CatMash.Models;
 using CatMash.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,17 @@ namespace CatMash.Controllers
     {
         readonly ICatQueryService _catQueryService;
         readonly IOptions<ConnectionString> _connectionString;
+        private readonly ILogger<CatController> _logger;
 
-        public CatController(ICatQueryService catQueryService, IOptions<ConnectionString> connectionString)
+        public CatController(
+            ICatQueryService catQueryService, 
+            IOptions<ConnectionString> connectionString, 
+            ILogger<CatController> logger
+        )
         {
             _catQueryService = catQueryService;
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         [HttpGet( "getAllCats" )]
@@ -29,23 +36,35 @@ namespace CatMash.Controllers
         {
             using ( var ctx = DbHelper.CreateCtx( _connectionString.Value.Name ) )
             {
-                return Ok( await _catQueryService.GetAllCatsAsync( ctx ) );
+                var cats = await _catQueryService.GetAllCatsAsync(ctx);
+                _logger.LogInformation("getAllCats query success.");
+                return Ok(cats);
             }
         }
 
         [HttpPut( "vote" )]
-        public async Task<IActionResult> PutVoteCat( string id )
+        public async Task<IActionResult> PutVoteCat( [FromQuery] string id )
         {
-            using (var ctx = DbHelper.CreateCtx(_connectionString.Value.Name))
+            _logger.LogInformation("Cat score succesfully updated.");
+            if (id != null)
             {
-                try
+                using (var ctx = DbHelper.CreateCtx(_connectionString.Value.Name))
                 {
-                    await _catQueryService.UpdateCatScoreAsync(ctx, id);
-                } catch (Exception e)
-                {
-                    Console.WriteLine(e);
+                    try
+                    {
+                        await _catQueryService.UpdateCatScoreAsync(ctx, id);
+                        _logger.LogInformation("Cat score succesfully updated.");
+                        return Ok();
+                    } catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error occured while updating cat score.");
+                        return StatusCode(500);
+                    }
                 }
-                return Ok();
+            } else
+            {
+                _logger.LogError("Error query params id was null.");
+                return BadRequest();
             }
         }
     }
