@@ -1,4 +1,12 @@
-.main-container {
+@import "../../shared/less/style.less";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.vote-container {
     display: flex;
     flex-direction: row;
     height: 100%;
@@ -6,13 +14,42 @@
 
 .right-container {
     display: flex;
+    flex-direction: column;
     flex: 1;
-    background-color: red;
+    background-color: #FFFFFF;
 }
 
 .left-container {
     display: flex;
+    flex-direction: column;
     flex: 1;
     justify-content: right;
-    background-color: blue;
+    background-color: #222222;
+}
+
+.title-left {
+    display: flex;
+    justify-content: right;
+    padding-right: 2%;
+    color: #FFFFFF;
+}
+
+.title-right {
+    display: flex;
+    justify-content: left;
+    padding-left: 2%;
+    color: #222222
+}
+
+.cat-container {
+    display: flex;
+    align-self: center;
+    padding: 20%;
+}
+
+.leaderboard-button {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(90deg, #222222 50%, #FFFFFF 50%);
+    width: 100%;
 }

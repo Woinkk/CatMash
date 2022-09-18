@@ -1,14 +1,19 @@
-<div class="main-container">
-    <div class="left-container">
-        <h1 class="title-left">CAT</h1>
-        <div class="left-cat">
-
+<div class="container">
+    <div class="vote-container">
+        <div class="left-container">
+            <h1 class="title-left">CAT</h1>
+            <div class="cat-container">
+                <app-cat-card class="card white-card" [cat]="leftCat" (voteEvent)="setRandomCats()"></app-cat-card>
+            </div>
+        </div>
+        <div class="right-container">
+            <h1 class="title-right">MASH</h1>
+            <div class="cat-container">
+                <app-cat-card class="card black-card" [cat]="rightCat" (voteEvent)="setRandomCats()"></app-cat-card>
+            </div>
         </div>
     </div>
-    <div class="right-container">
-        <h1 class="title-right">MASH</h1>
-        <div class="right-cat">
-
-        </div>
+    <div class="leaderboard-button">
+        <button nz-button [routerLink]="['/catmash/leaderboard']">Voir le classement des chats</button>
     </div>
 </div>
