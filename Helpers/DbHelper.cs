@@ -16,9 +16,9 @@ namespace CatMash.Helpers
         {
             string createTable = @"
                 CREATE TABLE CatTable(
-                    Id TEXT, 
-                    Url TEXT, 
-                    Score INTEGER
+                    Id TEXT NOT NULL, 
+                    Url TEXT NOT NULL, 
+                    Score INTEGER NOT NULL
                 );";
 
             ctx.Execute(createTable);
