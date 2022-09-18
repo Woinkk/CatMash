@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from '../ui/pages/layout/layout.component';
 import { VoteComponent } from './components/vote/vote.component';
+import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,10 @@ const routes: Routes = [
       {
         path: 'vote',
         component: VoteComponent
+      },
+      {
+        path: 'leaderboard',
+        component: LeaderboardComponent
       }
     ]
   }
