@@ -1,0 +1,15 @@
+
+<div class="container">
+    <div class="title-container">
+            <h1 class="title">Classement</h1>
+            <button class="vote-button" nz-button [routerLink]="['/catmash/vote']">Retour au vote</button>
+    </div>
+    <div class="cats-container">
+        <div *ngFor="let cat of cats$ | async" class="cat-container">
+            <nz-card class="card" nzHoverable>
+                <div style="background-image: url({{cat.url}});" class="image"></div>
+                <nz-card-meta class="card-description" nzTitle="Score: {{cat.score}}"></nz-card-meta>
+            </nz-card>
+        </div>
+    </div>
+</div>
