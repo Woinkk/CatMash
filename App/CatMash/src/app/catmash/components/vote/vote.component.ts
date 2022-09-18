@@ -21,10 +21,12 @@ export class VoteComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._apiService.getAllCats().subscribe(cats => {
-      this.cats = cats;
-      this.setRandomCats();
-    })
+    this._subscription.add( 
+      this._apiService.getAllCats().subscribe(cats => {
+        this.cats = cats;
+        this.setRandomCats();
+      })
+    );
   }
 
   getRandomCat(): Cat | undefined {
