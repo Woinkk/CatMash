@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  apiBase: 'https://catmashdemo.azurewebsites.net',
+  env: 'true'
 };
