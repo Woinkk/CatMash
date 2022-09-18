@@ -10,7 +10,7 @@ namespace CatMash.Queries
     {
         public async Task<IEnumerable<Cat>> GetAllCatsAsync( SQLiteConnection ctx )
         {
-            return await ctx.QueryAsync<Cat>(@"SELECT * FROM CatTable;");
+            return await ctx.QueryAsync<Cat>(@"SELECT * FROM CatTable ORDER BY Score DESC;");
         }
 
         public async Task UpdateCatScoreAsync(SQLiteConnection ctx, string id)
